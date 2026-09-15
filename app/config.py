@@ -46,10 +46,14 @@ class Settings(BaseSettings):
     product_currency: str = "RUB"
 
     # --------------------------------------------- поле «15-значное число»
-    customer_field_label: str = "Номер аккаунта"
+    customer_field_label: str = "ID клиента"
     customer_field_hint: str = "15 цифр, без пробелов и дефисов"
     customer_field_pattern: str = r"^\d{15}$"
     customer_field_error: str = "Введите ровно 15 цифр."
+
+    # Исправить ID после оплаты нельзя, поэтому покупатель обязан подтвердить,
+    # что проверил введённое значение. Отключается, если галочка мешает конверсии.
+    require_ref_confirmation: bool = True
 
     collect_email: bool = True
     require_email: bool = False

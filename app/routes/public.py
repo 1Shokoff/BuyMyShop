@@ -35,6 +35,16 @@ def _payment_options(settings: Settings) -> list[dict[str, str]]:
     ]
 
 
+def _form_state(customer_ref: str, email: str, provider: str, ref_confirmed: str) -> dict:
+    """Что вернуть в форму, если ввод не прошёл проверку."""
+    return {
+        "customer_ref": customer_ref,
+        "email": email,
+        "provider": provider,
+        "ref_confirmed": bool(ref_confirmed),
+    }
+
+
 def _render_index(
     request: Request,
     settings: Settings,
@@ -74,6 +84,7 @@ async def buy(
     customer_ref: str = Form(default=""),
     email: str = Form(default=""),
     provider: str = Form(default=""),
+    ref_confirmed: str = Form(default=""),
     csrf_token: str = Form(default="", alias=CSRF_FIELD),
     settings: Settings = Depends(get_settings),
     session: AsyncSession = Depends(get_session),
@@ -84,7 +95,7 @@ async def buy(
             request,
             settings,
             errors={"__all__": "Слишком много попыток. Подождите минуту и повторите."},
-            form={"customer_ref": customer_ref, "email": email, "provider": provider},
+            form=_form_state(customer_ref, email, provider, ref_confirmed),
             status_code=429,
         )
 
@@ -93,7 +104,7 @@ async def buy(
             request,
             settings,
             errors={"__all__": "Форма устарела. Проверьте данные и отправьте ещё раз."},
-            form={"customer_ref": customer_ref, "email": email, "provider": provider},
+            form=_form_state(customer_ref, email, provider, ref_confirmed),
             status_code=400,
         )
 
@@ -112,6 +123,12 @@ async def buy(
         except order_service.ValidationProblem as problem:
             errors[problem.field] = problem.message
 
+    # Атрибут required в разметке — подсказка браузеру, не защита: проверяем на сервере.
+    if settings.require_ref_confirmation and not ref_confirmed:
+        errors["ref_confirmed"] = (
+            f"Подтвердите, что {settings.customer_field_label} указан верно."
+        )
+
     providers = get_providers()
     payment_provider = providers.get(provider)
     if payment_provider is None:
@@ -122,7 +139,7 @@ async def buy(
             request,
             settings,
             errors=errors,
-            form={"customer_ref": customer_ref, "email": email, "provider": provider},
+            form=_form_state(customer_ref, email, provider, ref_confirmed),
             status_code=400,
         )
 
@@ -166,7 +183,7 @@ async def buy(
                 "__all__": "Платёжный сервис временно недоступен. "
                 "Попробуйте другой способ оплаты или повторите позже."
             },
-            form={"customer_ref": customer_ref, "email": email, "provider": provider},
+            form=_form_state(customer_ref, email, provider, ref_confirmed),
             status_code=502,
         )
 

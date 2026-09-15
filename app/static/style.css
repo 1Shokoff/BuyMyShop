@@ -180,3 +180,24 @@ a { color: var(--accent); }
   .summary { grid-template-columns: 1fr; gap: 2px 0; }
   .summary dd { margin-bottom: 8px; }
 }
+
+.ref-preview {
+  margin: 6px 0 0;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  min-height: 1.5em;
+}
+
+.ref-preview-ok { color: var(--ok-text); font-weight: 600; }
+
+.confirm {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.confirm input { margin-top: 4px; flex-shrink: 0; }

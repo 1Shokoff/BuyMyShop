@@ -28,3 +28,26 @@
 
   schedule();
 })();
+
+/* Форма заказа: показываем введённый ID разбитым по три цифры и счётчик длины.
+   Исправить ID после оплаты нельзя, поэтому опечатка должна бросаться в глаза. */
+(function () {
+  var input = document.getElementById('customer_ref');
+  var preview = document.getElementById('customer_ref_preview');
+  if (!input || !preview) return;
+
+  var EXPECTED = 15;
+
+  function render() {
+    var digits = input.value.replace(/\D/g, '');
+    if (!digits) { preview.textContent = ''; preview.className = 'ref-preview'; return; }
+
+    var grouped = digits.replace(/(\d{3})(?=\d)/g, '$1 ');
+    var complete = digits.length === EXPECTED;
+    preview.textContent = grouped + ' — ' + digits.length + ' из ' + EXPECTED;
+    preview.className = 'ref-preview' + (complete ? ' ref-preview-ok' : '');
+  }
+
+  input.addEventListener('input', render);
+  render();
+})();

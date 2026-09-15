@@ -43,8 +43,20 @@
         {% if errors.get('customer_ref') %}aria-invalid="true"{% endif %}
         required>
       <p class="hint" id="customer_ref_hint">{{ settings.customer_field_hint }}</p>
+      <p class="ref-preview" id="customer_ref_preview" aria-live="polite"></p>
       {% if errors.get('customer_ref') %}<p class="error">{{ errors['customer_ref'] }}</p>{% endif %}
     </div>
+
+    {% if settings.require_ref_confirmation %}
+    <div class="field">
+      <label class="confirm">
+        <input type="checkbox" name="ref_confirmed" value="1"
+               {% if form.get('ref_confirmed') %}checked{% endif %} required>
+        <span>Я проверил {{ settings.customer_field_label }} — после оплаты его уже не изменить.</span>
+      </label>
+      {% if errors.get('ref_confirmed') %}<p class="error">{{ errors['ref_confirmed'] }}</p>{% endif %}
+    </div>
+    {% endif %}
 
     {% if settings.collect_email %}
     <div class="field">
@@ -83,4 +95,8 @@
   </form>
   {% endif %}
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/app.js" defer></script>
 {% endblock %}
