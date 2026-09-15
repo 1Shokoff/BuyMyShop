@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Заказ {{ order.public_code }}{% endblock %}
+
+{% block content %}
+<section class="card" id="order-card" data-order-id="{{ order.id }}" data-poll="{{ 'yes' if poll else 'no' }}">
+  <h1>Заказ {{ order.public_code }}</h1>
+
+  <div class="status status-{{ order.status }}" id="status-block">
+    {% if order.status == 'paid' %}
+      <p class="status-title">✅ Оплата прошла</p>
+      <p>Спасибо! Платёж подтверждён, заказ передан продавцу.</p>
+    {% elif order.status == 'failed' %}
+      <p class="status-title">❌ Оплата не прошла</p>
+      <p>Платёж отклонён платёжным сервисом. Можно попробовать ещё раз или выбрать другой способ оплаты.</p>
+    {% elif order.status == 'expired' %}
+      <p class="status-title">⌛ Срок оплаты истёк</p>
+      <p>Заказ больше не ждёт оплату. Оформите новый заказ.</p>
+    {% else %}
+      <p class="status-title">⏳ Ожидаем подтверждение оплаты</p>
+      <p>Страница обновится сама, как только платёжный сервис подтвердит платёж. Это занимает до минуты.</p>
+    {% endif %}
+  </div>
+
+  <dl class="summary">
+    <dt>Товар</dt><dd>{{ order.product_title }}</dd>
+    <dt>Сумма</dt><dd>{{ order.amount }} {{ order.currency }}</dd>
+    <dt>{{ settings.customer_field_label }}</dt><dd><code>{{ order.customer_ref }}</code></dd>
+    <dt>Номер заказа</dt><dd><code>{{ order.public_code }}</code></dd>
+  </dl>
+
+  {% if order.status == 'paid' and after_payment_html %}
+    <div class="prose after-payment">{{ after_payment_html|safe }}</div>
+  {% endif %}
+
+  {% if order.status in ('failed', 'expired') %}
+    <a class="btn btn-primary" href="/">Оформить заказ заново</a>
+  {% endif %}
+
+  <p class="hint">
+    Сохраните ссылку на эту страницу — по ней всегда виден статус заказа.
+    {% if settings.support_contact %}Вопросы по заказу: {{ settings.support_contact }}{% endif %}
+  </p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/app.js" defer></script>
+{% endblock %}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ settings.site_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">{{ settings.site_name }}</a>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <nav>
+      <a href="/offer">Оферта</a>
+      <a href="/privacy">Политика конфиденциальности</a>
+      <a href="/refund">Возврат</a>
+      <a href="/contacts">Контакты</a>
+    </nav>
+    <p class="muted">© {{ settings.site_name }}</p>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets and local state
+.env
+*.env
+!.env.example
+
+# Docker volumes / runtime data
+data/
+caddy_data/
+caddy_config/
+logs/
+*.log

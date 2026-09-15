@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Заказы — админка{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Заказы <span class="muted">({{ total }})</span></h1>
+
+  <form method="get" class="row filters">
+    <input type="search" name="search" value="{{ search }}" placeholder="Код заказа или номер">
+    <select name="status">
+      <option value="">Все статусы</option>
+      {% for value in ['created', 'pending', 'paid', 'failed', 'expired'] %}
+      <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ value }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn" type="submit">Фильтр</button>
+  </form>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Создан</th><th>Код</th><th>Статус</th><th>Сумма</th><th>{{ settings.customer_field_label }}</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+          <td><code>{{ order.public_code }}</code></td>
+          <td><span class="badge badge-{{ order.status }}">{{ order.status }}</span></td>
+          <td>{{ order.amount }} {{ order.currency }}</td>
+          <td><code>{{ order.customer_ref }}</code></td>
+          <td><a href="/admin/orders/{{ order.id }}">подробнее</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="muted">Пока нет заказов.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if pages > 1 %}
+  <p class="row">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}&status={{ status_filter }}&search={{ search }}">← назад</a>{% endif %}
+    <span class="muted">стр. {{ page }} из {{ pages }}</span>
+    {% if page < pages %}<a href="?page={{ page + 1 }}&status={{ status_filter }}&search={{ search }}">вперёд →</a>{% endif %}
+  </p>
+  {% endif %}
+</section>
+{% endblock %}

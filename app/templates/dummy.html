@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Тестовая оплата{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Тестовая оплата</h1>
+  <p class="alert alert-warning">
+    Это встроенная заглушка платёжного сервиса. Деньги не списываются.
+    Включена флагом <code>DUMMY_ENABLED</code> — на боевом сайте должна быть выключена.
+  </p>
+  <dl class="summary">
+    <dt>Заказ</dt><dd><code>{{ order.public_code }}</code></dd>
+    <dt>Сумма</dt><dd>{{ payment.amount }} {{ payment.currency }}</dd>
+  </dl>
+  <div class="row">
+    <form method="post" action="/dummy/{{ payment.id }}/succeeded">
+      <button class="btn btn-primary" type="submit">Оплатить успешно</button>
+    </form>
+    <form method="post" action="/dummy/{{ payment.id }}/failed">
+      <button class="btn" type="submit">Отклонить платёж</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

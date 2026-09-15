@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — {{ settings.site_name }}{% endblock %}
+{% block content %}
+<section class="card prose">
+  <h1>{{ title }}</h1>
+  {% if body_html %}
+    {{ body_html|safe }}
+  {% else %}
+    <p class="alert alert-warning">
+      Документ пока не заполнен. Текст лежит в <code>content/legal/</code> и правится без пересборки образа.
+    </p>
+  {% endif %}
+</section>
+{% endblock %}

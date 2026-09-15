@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Заказ {{ order.public_code }} — админка{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Заказ {{ order.public_code }}</h1>
+  <dl class="summary">
+    <dt>Статус</dt><dd><span class="badge badge-{{ order.status }}">{{ order.status }}</span></dd>
+    <dt>Товар</dt><dd>{{ order.product_title }}</dd>
+    <dt>Сумма</dt><dd>{{ order.amount }} {{ order.currency }}</dd>
+    <dt>{{ settings.customer_field_label }}</dt><dd><code>{{ order.customer_ref }}</code></dd>
+    <dt>E-mail</dt><dd>{{ order.customer_email or '—' }}</dd>
+    <dt>Создан</dt><dd>{{ order.created_at.strftime('%d.%m.%Y %H:%M:%S') }} UTC</dd>
+    <dt>Оплачен</dt><dd>{{ order.paid_at.strftime('%d.%m.%Y %H:%M:%S') + ' UTC' if order.paid_at else '—' }}</dd>
+    <dt>IP</dt><dd>{{ order.client_ip or '—' }}</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Платежи</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Создан</th><th>Агрегатор</th><th>Счёт</th><th>ID у агрегатора</th><th>Статус</th></tr></thead>
+      <tbody>
+        {% for payment in order.payments %}
+        <tr>
+          <td>{{ payment.created_at.strftime('%d.%m %H:%M') }}</td>
+          <td>{{ payment.provider }}</td>
+          <td>{{ payment.invoice_no }}</td>
+          <td><code>{{ payment.provider_payment_id or '—' }}</code></td>
+          <td>{{ payment.state }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="muted">Попыток оплаты не было.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Уведомления в Telegram</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Создано</th><th>Попыток</th><th>Отправлено</th><th>Ошибка</th></tr></thead>
+      <tbody>
+        {% for message in messages %}
+        <tr>
+          <td>{{ message.created_at.strftime('%d.%m %H:%M') }}</td>
+          <td>{{ message.attempts }}</td>
+          <td>{{ message.sent_at.strftime('%d.%m %H:%M') if message.sent_at else ('провалено' if message.failed_at else 'в очереди') }}</td>
+          <td class="muted">{{ message.last_error or '' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="muted">Уведомлений не было.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <form method="post" action="/admin/orders/{{ order.id }}/resend">
+    <button class="btn" type="submit">Отправить уведомление ещё раз</button>
+  </form>
+</section>
+
+<p><a href="/admin">← ко всем заказам</a></p>
+{% endblock %}

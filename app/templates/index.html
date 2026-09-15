@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Оплата — {{ settings.product_title }}{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h1>{{ settings.product_title }}</h1>
+  <p class="price">{{ settings.product_price }} {{ settings.product_currency }}</p>
+</section>
+
+{% if instructions_html %}
+<section class="card prose">
+  <h2>Как оплатить</h2>
+  {{ instructions_html|safe }}
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Оформление заказа</h2>
+
+  {% if errors.get('__all__') %}
+    <p class="alert alert-error">{{ errors['__all__'] }}</p>
+  {% endif %}
+
+  {% if not providers %}
+    <p class="alert alert-error">
+      Приём платежей временно не настроен. Напишите нам: {{ settings.support_contact }}
+    </p>
+  {% else %}
+  <form method="post" action="/buy" class="buy-form" novalidate>
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+
+    <div class="field">
+      <label for="customer_ref">{{ settings.customer_field_label }}</label>
+      <input
+        type="text"
+        id="customer_ref"
+        name="customer_ref"
+        inputmode="numeric"
+        autocomplete="off"
+        spellcheck="false"
+        value="{{ form.get('customer_ref', '') }}"
+        aria-describedby="customer_ref_hint"
+        {% if errors.get('customer_ref') %}aria-invalid="true"{% endif %}
+        required>
+      <p class="hint" id="customer_ref_hint">{{ settings.customer_field_hint }}</p>
+      {% if errors.get('customer_ref') %}<p class="error">{{ errors['customer_ref'] }}</p>{% endif %}
+    </div>
+
+    {% if settings.collect_email %}
+    <div class="field">
+      <label for="email">E-mail{% if not settings.require_email %} <span class="muted">(необязательно)</span>{% endif %}</label>
+      <input type="email" id="email" name="email" autocomplete="email"
+             value="{{ form.get('email', '') }}"
+             {% if settings.require_email %}required{% endif %}>
+      <p class="hint">Нужен для чека и для связи, если с заказом что-то пойдёт не так.</p>
+      {% if errors.get('email') %}<p class="error">{{ errors['email'] }}</p>{% endif %}
+    </div>
+    {% endif %}
+
+    <fieldset class="field">
+      <legend>Способ оплаты</legend>
+      {% for provider in providers %}
+      <label class="provider">
+        <input type="radio" name="provider" value="{{ provider.slug }}"
+               {% if form.get('provider') == provider.slug or (not form.get('provider') and loop.first) %}checked{% endif %}>
+        <span>
+          <strong>{{ provider.title }}</strong>
+          {% if provider.hint %}<em>{{ provider.hint }}</em>{% endif %}
+        </span>
+      </label>
+      {% endfor %}
+      {% if errors.get('provider') %}<p class="error">{{ errors['provider'] }}</p>{% endif %}
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary">
+      Перейти к оплате — {{ settings.product_price }} {{ settings.product_currency }}
+    </button>
+    <p class="hint">
+      Нажимая кнопку, вы соглашаетесь с <a href="/offer">офертой</a> и
+      <a href="/privacy">политикой конфиденциальности</a>.
+      Оплата проходит на стороне платёжного сервиса — данные карты на наш сайт не попадают.
+    </p>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Переход к оплате{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Переходим к оплате…</h1>
+  <p>Если страница не открылась автоматически, нажмите кнопку ниже.</p>
+  <form method="post" action="{{ action }}" id="redirect-form">
+    {% for name, value in fields.items() %}
+    <input type="hidden" name="{{ name }}" value="{{ value }}">
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Перейти к оплате</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>document.getElementById('redirect-form').submit();</script>
+{% endblock %}
