@@ -1,11 +1,24 @@
-{
-	email {$ACME_EMAIL}
-}
+# Адрес сайта берётся из переменной SITE_DOMAIN:
+#
+#   example.com   боевой режим: Caddy сам получит и будет продлевать
+#                 сертификат Let's Encrypt, HTTP редиректится на HTTPS
+#   :80           проверка по IP без домена: только HTTP, без сертификата
+#
+# Письма об истечении сертификата Caddy может слать на ваш адрес — для этого
+# добавьте сюда, первой строкой файла, глобальный блок:
+#
+#   {
+#   	email you@example.com
+#   }
+#
+# Подставлять в него переменную окружения нельзя: если она окажется пустой,
+# директива останется без аргумента и Caddy не запустится.
 
 {$SITE_DOMAIN} {
 	encode zstd gzip
 
 	header {
+		# Над HTTP браузеры HSTS игнорируют, так что режиму :80 заголовок не мешает.
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"

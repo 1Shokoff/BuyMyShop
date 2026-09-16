@@ -36,8 +36,8 @@ services:
       - "443:443"
       - "443:443/udp"
     environment:
+      # Домен для боевого режима либо :80 для проверки по IP без сертификата.
       SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
-      ACME_EMAIL: ${ACME_EMAIL:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
