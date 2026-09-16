@@ -47,6 +47,10 @@ class PaymentRequest:
     description: str
     return_url: str
     fail_url: str
+    # Куда агрегатор шлёт уведомление. Передаётся явно: собирать этот адрес
+    # из return_url подстановкой нельзя — маршрут /webhooks/{provider} принимает
+    # ровно один сегмент, а в return_url за ним стоит идентификатор платежа.
+    webhook_url: str
     customer_ref: str
     customer_email: str | None = None
 

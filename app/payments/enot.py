@@ -85,7 +85,7 @@ class EnotProvider(PaymentProvider):
             "order_id": str(req.payment_id),
             "currency": req.currency,
             "shop_id": self.shop_id,
-            "hook_url": req.return_url.replace("/return/", "/webhooks/enot/"),
+            "hook_url": req.webhook_url,
             "success_url": req.return_url,
             "fail_url": req.fail_url,
             "expire": 30,

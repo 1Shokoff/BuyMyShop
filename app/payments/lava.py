@@ -76,7 +76,7 @@ class LavaProvider(PaymentProvider):
             "orderId": str(req.payment_id),
             "shopId": self.shop_id,
             "comment": req.description[:255],
-            "hookUrl": req.return_url.replace("/return/", "/webhooks/lava/"),
+            "hookUrl": req.webhook_url,
             "successUrl": req.return_url,
             "failUrl": req.fail_url,
             "expire": 30,

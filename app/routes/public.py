@@ -165,6 +165,7 @@ async def buy(
         description=f"{order.product_title} (заказ {order.public_code})",
         return_url=settings.url(f"/return/{payment.id}"),
         fail_url=settings.url(f"/fail/{payment.id}"),
+        webhook_url=settings.url(f"/webhooks/{payment_provider.slug}"),
         customer_ref=order.customer_ref,
         customer_email=order.customer_email,
     )
